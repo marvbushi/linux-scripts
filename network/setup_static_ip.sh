@@ -5,7 +5,7 @@ setup_static_ip() {
     read -p "Enter static IP address: " ip_address
     read -p "Enter netmask: " netmask
     read -p "Enter default gateway: " gateway
-    read -p "Enter DNS server(s) separated by space: " dns_servers
+    read -p "Enter DNS server(s) separated by comma: " dns_servers
 
     # Save configuration to /etc/netplan/
     cat <<EOF | sudo tee /etc/netplan/01-netcfg.yaml >/dev/null
@@ -15,8 +15,11 @@ network:
   ethernets:
     eth0:
       dhcp4: no
-      addresses: [$ip_address/$netmask]
-      gateway4: $gateway
+      addresses:
+        - [$ip_address/$netmask]
+      routes: 
+        - to: default
+          via: $gateway
       nameservers:
         addresses: [$dns_servers]
 EOF
